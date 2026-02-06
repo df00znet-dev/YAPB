@@ -55,7 +55,7 @@ if (YAPB_get_error(&pkt) < 0) {
 
 ### Forward Compatibility
 
-Pop functions do NOT modify the output on error or YAPB_STS_COMPLETE. Initialize fields to defaults before popping - if the packet lacks that field, the default is preserved:
+Pop functions do NOT modify the output on error. Initialize fields to defaults before popping - if the packet lacks that field, the default is preserved because the pop returns an error (e.g. `YAPB_ERR_NO_MORE_ELEMENTS`):
 
 ```c
 uint16_t new_field = 42;       /* default for older packets */
@@ -68,37 +68,38 @@ YAPB_pop_u16(&pkt, &new_field); /* stays 42 if packet ended */
 
 | Function | Description |
 |----------|-------------|
-| `YAPB_initialize(pkt, buf, size)` | Init packet for writing |
-| `YAPB_finalize(pkt, &len)` | Write header, get total length |
-| `YAPB_load(pkt, data, size)` | Load raw data for reading |
+| `YAPB_initialize(*out, *in_buf, in_size)` | Init packet for writing |
+| `YAPB_finalize(*in, *out_len)` | Write header, get total length |
+| `YAPB_load(*out, *in_data, in_size)` | Load raw data for reading |
 
 ### Push (Write Mode)
 
 | Function | Description |
 |----------|-------------|
-| `YAPB_push_i8/i16/i32/i64` | Push signed integer |
-| `YAPB_push_u8/u16/u32/u64` | Push unsigned integer (inline wrappers) |
-| `YAPB_push_float/double` | Push floating point |
-| `YAPB_push_blob(pkt, data, len)` | Push raw bytes (max 65535) |
-| `YAPB_push_nested(pkt, nested)` | Push a finalized packet inside another |
+| `YAPB_push_i8/i16/i32/i64(*in, *in_val)` | Push signed integer |
+| `YAPB_push_u8/u16/u32/u64(*in, *in_val)` | Push unsigned integer (inline wrappers) |
+| `YAPB_push_float/double(*in, *in_val)` | Push floating point |
+| `YAPB_push_blob(*in, *in_data, in_len)` | Push raw bytes (max 65535) |
+| `YAPB_push_nested(*in, *in_nested)` | Push a finalized packet inside another |
 
 ### Pop (Read Mode)
 
 | Function | Description |
 |----------|-------------|
-| `YAPB_pop_i8/i16/i32/i64` | Pop signed integer |
-| `YAPB_pop_u8/u16/u32/u64` | Pop unsigned integer (inline wrappers) |
-| `YAPB_pop_float/double` | Pop floating point |
-| `YAPB_pop_blob(pkt, &data, &len)` | Pop blob (pointer into packet buffer) |
-| `YAPB_pop_nested(pkt, &nested)` | Pop nested packet |
+| `YAPB_pop_i8/i16/i32/i64(*in, *out)` | Pop signed integer |
+| `YAPB_pop_u8/u16/u32/u64(*in, *out)` | Pop unsigned integer (inline wrappers) |
+| `YAPB_pop_float/double(*in, *out)` | Pop floating point |
+| `YAPB_pop_blob(*in, *out_data, *out_len)` | Pop blob (pointer into packet buffer) |
+| `YAPB_pop_nested(*in, *out)` | Pop nested packet |
+| `YAPB_pop_next(*in, *out)` | Pop next element with type tag (for dynamic parsing) |
 
 ### Query
 
 | Function | Description |
 |----------|-------------|
-| `YAPB_get_error(pkt)` | Get sticky error state |
-| `YAPB_get_elem_count(pkt, &count)` | Count elements without advancing position |
-| `YAPB_Result_str(result)` | Get string name for result code |
+| `YAPB_get_error(*in)` | Get sticky error state |
+| `YAPB_get_elem_count(*in, *out_count)` | Count elements without advancing position |
+| `YAPB_Result_str(in_result)` | Get string name for result code |
 
 ## Important Notes
 
