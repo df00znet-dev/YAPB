@@ -1,0 +1,12 @@
+PROJECT_NAME           = "YAPB"
+INPUT                  = src include
+RECURSIVE              = YES
+
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+
+USE_MDFILE_AS_MAIN_PAGE = YAPB.md
+
+OUTPUT_DIRECTORY = docs
+
+HTML_OUTPUT = .
